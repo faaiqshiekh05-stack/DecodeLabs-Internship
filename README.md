@@ -1,25 +1,30 @@
-🚀 DecodeLabs-Internship
-My Data Analytics Internship Projects
-DecodeLabs Internship
+🚀 DECODELABS-INTERNSHIP
+Data Analytics Internship Projects
+🏢 DecodeLabs Internship
 
-This repository contains my projects and learning during my Data Analytics Internship at DecodeLabs.
+This repository showcases my Data Analytics Internship journey at DecodeLabs, where I worked on transforming raw datasets into meaningful business insights using Python, SQL, and Power BI.
 
-It showcases my journey from raw data handling → analysis → business intelligence → dashboard reporting.
+It reflects a complete end-to-end analytics workflow — from data preparation → analysis → business intelligence → dashboard reporting.
 
 📊 Data Analyst Internship Portfolio – DecodeLabs
-📌 Project Overview
+📌 PROJECT OVERVIEW
 
-This repository is part of my Data Analyst Internship at DecodeLabs.
+This repository documents my work as part of the Data Analyst Internship at DecodeLabs, focused on solving real-world data problems using analytical and visualization tools.
 
-The main objective is to perform:
+🎯 Core Objective
 
-Data loading
-Data cleaning
-Exploratory analysis
-Business intelligence analysis
-Dashboard reporting
+To convert raw, unstructured data into actionable business insights using a structured analytics pipeline:
 
-using tools like Python, SQL, and Power BI to extract meaningful insights from real-world datasets.
+📥 Data Loading & Ingestion
+🧹 Data Cleaning & Preprocessing
+📊 Exploratory Data Analysis (EDA)
+🧠 Business Intelligence & SQL Analysis
+📈 Dashboard Development & Reporting
+🛠️ Tools & Technologies
+Python 🐍
+SQL (MySQL) 🗄️
+Power BI 📊
+Pandas | NumPy
 
 📁 Repository Structure
 DecodeLabs-Internship/
