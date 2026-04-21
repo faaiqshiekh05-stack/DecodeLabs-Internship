@@ -1,0 +1,171 @@
+-- ==============================
+-- CREATE & SELECT DATABASE
+-- ==============================
+CREATE DATABASE project3_sql_analysis;
+
+-- Select the working database
+USE project3_sql_analysis;
+
+-- Show all available databases
+SHOW DATABASES;
+
+-- Show all tables in current database
+SHOW TABLES;
+
+-- Preview first 10 rows of cleaned dataset
+SELECT * FROM cleaned_data_final LIMIT 10;
+
+
+-- ==============================
+-- ROW LEVEL FILTERING (Funnel Logic)
+-- High-value orders OR Laptop sales
+-- ==============================
+SELECT 
+    OrderID,
+    CustomerID,
+    Product,
+    Quantity,
+    UnitPrice,
+    (Quantity * UnitPrice) AS TotalPrice
+FROM cleaned_data_final
+WHERE (Quantity * UnitPrice) > 1000
+   OR Product LIKE '%Laptop%'
+ORDER BY TotalPrice DESC;
+
+
+-- ==============================
+-- PRODUCT TRANSACTION COUNT
+-- ==============================
+SELECT 
+    Product AS Category,
+    COUNT(*) AS Total_Transactions
+FROM cleaned_data_final
+GROUP BY Product
+ORDER BY Total_Transactions DESC;
+
+
+-- ==============================
+-- PRODUCT PERFORMANCE METRICS
+-- Revenue + Average Order Value
+-- ==============================
+SELECT 
+    Product AS Category,
+    COUNT(*) AS Total_Transactions,
+    SUM(Quantity * UnitPrice) AS Total_Revenue,
+    AVG(Quantity * UnitPrice) AS Avg_Order_Value
+FROM cleaned_data_final
+GROUP BY Product
+ORDER BY Total_Revenue DESC;
+
+
+-- ==============================
+-- REVENUE BY SHIPPING REGION
+-- ==============================
+SELECT 
+    ShippingAddress,
+    COUNT(*) AS Orders,
+    SUM(Quantity * UnitPrice) AS Revenue
+FROM cleaned_data_final
+GROUP BY ShippingAddress
+ORDER BY Revenue DESC;
+
+
+-- ==============================
+-- REVENUE BY PAYMENT METHOD
+-- ==============================
+SELECT 
+    PaymentMethod,
+    COUNT(*) AS Transactions,
+    SUM(Quantity * UnitPrice) AS Revenue
+FROM cleaned_data_final
+GROUP BY PaymentMethod
+ORDER BY Revenue DESC;
+
+
+-- ==============================
+-- FILTER HIGH VOLUME PRODUCTS
+-- (More than 50 orders)
+-- ==============================
+SELECT 
+    Product,
+    COUNT(*) AS Orders
+FROM cleaned_data_final
+GROUP BY Product
+HAVING COUNT(*) > 50
+ORDER BY Orders DESC;
+
+
+-- ==============================
+-- REVENUE CONTRIBUTION ANALYSIS
+-- (Percentage share per product)
+-- ==============================
+SELECT 
+    Product,
+    SUM(Quantity * UnitPrice) AS Revenue,
+    ROUND(
+        SUM(Quantity * UnitPrice) * 100.0 
+        / SUM(SUM(Quantity * UnitPrice)) OVER (), 
+    2) AS Revenue_Percentage
+FROM cleaned_data_final
+GROUP BY Product
+ORDER BY Revenue DESC;
+
+
+-- ==============================
+-- TOP 5 PRODUCTS PER REGION
+-- (Window Function: RANK)
+-- ==============================
+SELECT *
+FROM (
+    SELECT 
+        ShippingAddress,
+        Product,
+        SUM(Quantity * UnitPrice) AS Revenue,
+        RANK() OVER (
+            PARTITION BY ShippingAddress 
+            ORDER BY SUM(Quantity * UnitPrice) DESC
+        ) AS rank_in_region
+    FROM cleaned_data_final
+    GROUP BY ShippingAddress, Product
+) ranked
+WHERE rank_in_region <= 5;
+
+
+-- ==============================
+-- MEAN REVENUE CALCULATION
+-- ==============================
+SELECT 
+    AVG(Quantity * UnitPrice) AS Mean_Revenue
+FROM cleaned_data_final;
+
+
+-- ==============================
+-- MEDIAN REVENUE CALCULATION
+-- (Using window functions)
+-- ==============================
+SELECT 
+    AVG(TotalPrice) AS Median_Revenue
+FROM (
+    SELECT 
+        (Quantity * UnitPrice) AS TotalPrice,
+        ROW_NUMBER() OVER (ORDER BY (Quantity * UnitPrice)) AS row_num,
+        COUNT(*) OVER () AS total_rows
+    FROM cleaned_data_final
+) t
+WHERE row_num IN (
+    FLOOR((total_rows + 1) / 2),
+    FLOOR((total_rows + 2) / 2)
+);
+
+
+-- ==============================
+-- COUPON CODE PERFORMANCE
+-- ==============================
+SELECT 
+    CouponCode,
+    COUNT(*) AS Orders,
+    SUM(Quantity * UnitPrice) AS Revenue
+FROM cleaned_data_final
+WHERE CouponCode IS NOT NULL
+GROUP BY CouponCode
+ORDER BY Revenue DESC;
